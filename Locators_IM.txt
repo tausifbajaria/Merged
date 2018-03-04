@@ -1,0 +1,365 @@
+*** Variables ***
+#Locators Created By Tausif
+${UsernameInput_SignIn_Locator}    id=txtUserID
+${PasswordInput_SignIn_Locator}    id=txtPassword
+${LoginButton_SignIn_Locator}    id=sub
+${NewButton_Home_Locator}    xpath=//div[@id='RULE_KEY']//a[.=' New']
+${InboundCallButton_Home_Locator}    xpath=//span[@class="menu-item-title"][.="Inbound Call"]
+${IFrame_Home_Locator}    xpath=//*[@id="PegaGadget1Ifr"]
+${AssetNumberInput_Home_Locator}    xpath=//input[@id="SearchStringPhone"]
+${SearchAssetResult_Home_Locator}    xpath=//table[@pl_prop_class="PegaComm-Data-Customer"]/tbody/tr[2]/td[1]/div/span/a
+${TopicName_CustomerPortal_Locator}    xpath=//div[@title="Customer Name"]
+${iframeWarpperClass_IM_Locator}    xpath=//div[@class="iframe-wrapper yui-module"]
+${SearchAssetButton_Home_Locator}    xpath=//button[@title="Search"]
+${TextInvoiceDueDate_PaymentHistory_Locator}    xpath=//div[contains(text(),'Invoice Due Date')]
+${TextReceiptStatus_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt Status')]
+${TextField_Search Topic_Locator}    xpath=//div[text()='Search Topic']
+${Text_CustomerProfile_Locator}    xpath=//h1[contains(text(),'Customer Profile')]
+${Topic_CustomerAndBilling_Locator}    xpath=//h2[contains(text(),'Customer & Billing')]
+${Field_CustomerName_Customer&Billing_Locator}    xpath=//span[contains(text(),'Customer Name')]
+${Field_Cancelled Reason_Payment History_Locator}    xpath=//div[contains(text(),'Cancelled Reason')]
+${Field_PrepaidIden_AssetDetail_Locator}    xpath=//span[text()='Prepaid Iden']
+${Field_SuspendRequestFlag_AssetDetail_Locator}    xpath=//span[text()='Suspend Request Flag']
+${Field_ErrorLock_AssetDetail_Locator}    xpath=//span[text()='Error Lock']
+${Field_Balance_AssetDetail_Locator}    xpath=//span[text()='Balance']
+${Field_ActiveStop_AssetDetail_Locator}    xpath=//span[text()='Active Stop']
+${Field_SuspendStop_AssetDetail_Locator}    xpath=//span[text()='Suspend Stop']
+${Field_DisableStop_AssetDetail_Locator}    xpath=//span[text()='Disable Stop']
+${Field_MonthlyUsage_AssetDetail_Locator}    xpath=//span[text()='Monthly Usage']
+${Field_EmergencyAirtime_AssetDetail_Locator}    xpath=//span[text()='Emergency Airtime']
+${Field_LastRechargeDate_AssetDetail_Locator}    xpath=//span[text()='Last Recharge Date']
+${Field_Other_RecentInteractions_Locator}    xpath=(//span[text()='Other'])[1]
+${Field_AccountName_CreditLimitInfo_Locator}    xpath=//span[text()='Account Name']
+${Field_Level_CreditLimitInfo_Locator}       xpath=//span[text()='Level']
+${Field_Service_CreditLimitInfo_Locator}    xpath=//span[text()='Service']
+${Field_ExpiryDate_CreditLimitInfo_Locator}    xpath=//span[text()='Expiry Date']
+${Field_MaxTempCreditLimit_CreditLimitInfo_Locator}    xpath=//span[text()='Max Temp Credit Limit']
+${MaxPermanentCreditLimit_Field_CreditLimitInfoTable_Locator}    xpath=//span[text()='Max Permanent Credit Limit']
+${OperatorDefinedThresholds_Field_CreditLimitInfoTable_Locator}    xpath=//span[contains(text(),'Operator Defined Thresholds')]
+${ResetAvailableDay_Field_CreditLimitInfoTable_Locator}    xpath=//span[contains(text(),'Reset Available Day')]
+${ResetAvailableUnit_Field_CreditLimitInfoTable_Locator}    xpath=//span[contains(text(),'Reset Available Unit')]
+${ServiceAndPromotion_Text_Locator}    xpath=//h1[contains(text(),'Service & Promotion')]
+${Service_Topic_Locator}    xpath=//h2[contains(text(),'Service')]
+${ServiceTable_Locator}    xpath=//*[@pl_prop='D_AdditionalServices.pxResults']
+${ServiceName_Field_ServiceTable_Locator}    xpath=//div[1][contains(text(),'Service Name')]
+${ServiceStartDate_Field_ServiceTable_Locator}    xpath=//div[1][contains(text(),'Service Start Date')]
+${Attribute_Field_ServiceTable_Locator}    xpath=//*[@id='bodyTbl_right']/tbody/tr[1]/th[3]//div[contains(text(),'Attribute')]
+#Locators Created By Prabhu
+${TextField_Search Topic_Locator}    xpath=//div[text()='Search Topic']
+#Locators for Test Cases Customer Portal
+#Customer Profile Text
+${CustomerProfile_Text_Locator}    xpath=//h1[contains(text(),'Customer Profile')]
+#Customer & Billing Topic
+${CustomerAndBilling_Topic_Locator}    xpath=//h2[contains(text(),'Customer & Billing')]
+#Fields inside Customer & Billing
+${CustomerName_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Customer Name')]
+${IDType_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'ID Type')]
+${ID#_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'ID#')]
+${E-Statement_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'e-Statement')]
+${CreditCardPaymentHistory_Field_CustomerAndBilling_Locator}    xpath=//div[1][contains(text(),'Credit Card Payment History')]
+${ItemizedBilledFlag_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Itemized Billed Flag')]
+${BillCycle_Field_CustomerAndBilling_Locator}    xpath=//div[4]//div[1]//div/span[contains(text(),'Bill Cycle')]
+${PaymentTerm_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Payment Term')]
+${PaymentMethod_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Payment Method')]
+${BillSystem_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Bill System')]
+${OutStandingBalance_Field_CustomerAndBilling_Locator}    xpath=//div[1][contains(text(),'Outstanding Balance')]
+${OverPayment_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'ยอดชำระเกิน/ล่วงหน้า')]
+${DueDate_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Due Date')]
+${WatchlistStatus_Field_CustomerAndBilling_Locator}    xpath=//*[@id='CT']//label[contains(text(),'Watchlist Status')]
+${WatchlistInfo_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Watchlist Info')]
+#Asset Detail Topic
+${AssetDetail_Topic_Locator}    xpath=//h2[contains(text(),'Asset Detail')]
+##Fields inside Asset Detail
+${MobileTextbox_Field_AssetDetail_Locator}    xpath=//span/a[starts-with(@name,'AssetDetailRes_')]
+${Product_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'Product')]
+${Status_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'Status')]
+${ChargeType_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'Charge Type')]
+${ServiceYear_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'Service Year')]
+${Segment_Field_AssetDetail_Locator}    xpath=//div[1][contains(text(),'Segment')]
+${PAGroup_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'PA group')]
+${SIMNumber_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'SIM Serial No.')]
+${ARPU_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'ARPU')]
+${DeviceContract_Field_AssetDetail_Locator}    xpath=//div[1][contains(text(),'Device Contract')]
+${MainPromotion_Field_AssetDetail_Locator}    xpath=//span[contains(text(),'Main Promotion')]
+#Customer Activity Text
+${CustomerActivity_Text_Locator}    xpath=//h1[contains(text(),'Customer Activity')]
+#Recent Interactions Topic
+${RecentInteractions_Topic_Locator}    xpath=//h2[contains(text(),'Recent Interactions')]
+#Recent Interactions Table 1
+${RecentInteractions_Table1_Locator}    xpath=//*[@pl_prop='D_AC_InteractionHistory.pxResults']
+#Fields inside Recent Interactions Table
+#----------------------------------Captured only elements in the first table-----------------------------------
+${NotYetDetermined_Field_RecentInteractionsTable1_Locator}    xpath=(//span[contains(text(),'Not yet determined')])[1]
+${InteractionNo_Field_RecentInteractionsTable1_Locator}    xpath=(//span[contains(text(),'Interaction No.:')])[1]
+${CreateDate_Field_RecentInteractionsTable1_Locator}    xpath=(//span[contains(text(),'Create Date:')])[1]
+${CreatedBy_Field_RecentInteractionsTable1_Locator}    xpath=(//span[contains(text(),'Created by:')])[1]
+${Duration_Field_RecentInteractionsTable1_Locator}    xpath=(//span[contains(text(),'Duration:')])[1]
+#Events & Cases Topic
+${EventAndCases_Topic_Locator}    xpath=//h2[contains(text(),'Events & Cases')]
+#Events & Cases Table 1
+${EventAndCases_Table1_Locator}    xpath=(//*[@id='CaseEventCSS'])[1]
+#Fields inside Events & Cases Table
+#----------------------------------Captured only elements in the first table
+${CaseEventID_Field_EventAndCasesTable1_Locator}    xpath=(//label[contains(text(),'Case/Event ID')])[1]
+${CreatedDate_Field_EventAndCasesTable1_Locator}    xpath=(//label[contains(text(),'Created Date')])[1]
+${Channel_Field_EventAndCasesTable1_Locator}    xpath=(//label[contains(text(),'Channel')])[1]
+${LocationCode_Field_EventAndCasesTable1_Locator}    xpath=(//label[contains(text(),'Location Code')])[1]
+${AssetNo_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Asset No.')])[1]
+${TopicEventDescription_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Topic / Event Description')])[1]
+${ReferenceOrder_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Reference / Order #')])[1]
+${Createdby_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Created By')])[1]
+${Owner_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Owner')])[1]
+${StatusEventType_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Status / Event Type')])[1]
+${CommitDate_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Commit Date')])[1]
+${ClosedDate_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Closed Date')])[1]
+${CaseDuration_Field_EventAndCasesTable1_Locator}    xpath=(//*[@id='CaseEventCSS']//label[contains(text(),'Case Duration')])[1]
+#Siebel Activity Topic
+${SiebelActivity_Topic_Locator}    xpath=//h2[contains(text(),'Siebel Activity')]
+#Siebel Activity Table
+${SiebelActivityTable_Locator}    xpath=//*[@pl_prop='D_QueryActivity.pxResults']
+#Fields inside Siebel Activity Table
+${CreatedDate_Field_SiebelActivity_Locator}    xpath=//div[text()='Created Date']
+${Category_Field_SiebelActivity_Locator}    xpath=//div[text()='Category']
+${SubCategory_Field_SiebelActivity_Locator}    xpath=//div[text()='Sub Category']
+${SRTT_Field_SiebelActivity_Locator}    xpath=//div[text()='SR/TT']
+${SRTTNumber_Field_SiebelActivity_Locator}    xpath=//div[text()='SR/TT Number']
+${Status_Field_SiebelActivity_Locator}    xpath=(//div[contains(text(),'Status')])[1]
+${Type_Field_SiebelActivity_Locator}    xpath=//div[text()='Type']
+${CaseID_Field_SiebelActivity_Locator}    xpath=//div[text()='Case ID']
+${ActivityID_Field_SiebelActivity_Locator}    xpath=//div[text()='Activity ID']
+${CreatedBy_Field_SiebelActivity_Locator}    xpath=//div[text()='Created By']
+#Service & Promotion
+#Service Topic
+#Service Table
+#Headers inside Service Table
+#On Clicking Attribute magnifier Icon Image
+${AttributeIconImg_Field_ServiceTable_Locator}    xpath=//*[starts-with(@id,'$PD_AdditionalServices')]//img
+${AdditionalAttribute_Field_Attribute_ServiceTable_Locator}    xpath=//label[contains(text(),'Additional Attribute')]
+${DisplayName_Field_Attribute_ServiceTable_Locator}    xpath=//div[1][contains(text(),'Display Name')]
+${Value_Field_Attribute_ServiceTable_Locator}    xpath=//div[1][contains(text(),'Value')]
+#Promotion Topic
+${Promotion_Topic_Locator}    xpath=//h2[contains(text(),'Promotion')]
+#Asset Promotion Text
+${AssetPromotion_Text_Locator}    xpath=//label[text()='Asset Promotion']
+#Asset Promotion Table
+${AssetPromotion_Table_Locator}     xpath=//*[@pl_prop='.AssetPromotionLists']
+#Headers inside Asset Promotion Table
+${PromotionCode_Field_AssetPromotionTable_Locator}      xpath=(//div[1][text()='Promotion Code'])[1]
+${PromotionName_Field_AssetPromotionTable_Locator}      xpath=(//div[1][text()='Promotion Name'])[1]
+${Description_Field_AssetPromotionTable_Locator}        xpath=(//div[1][text()='Description'])[1]
+${PromotionClass_Field_AssetPromotionTable_Locator}     xpath=(//div[1][text()='Promotion Class'])[1]
+${Start_Field_AssetPromotionTable_Locator}      xpath=(//div[1][text()='Start'])[1]
+${End_Field_AssetPromotionTable_Locator}        xpath=(//div[1][text()='End'])[1]
+${Duration_Field_AssetPromotionTable_Locator}       xpath=(//div[1][text()='Duration'])[1]
+${PaymentMode_Field_AssetPromotionTable_Locator}    xpath=(//div[1][text()='Payment Mode'])[1]
+${Attribute_Field_AssetPromotionTable_Locator}      xpath=(//div[1][text()='Attribute'])[1]
+
+#Account Promotion (BA) Text
+${AccountPromotion(BA)_Text_Locator}    xpath=//label[text()='Account Promotion (BA)']
+#Account Promotion (BA) Table
+${AccountPromotion(BA)_Table_Locator}   xpath=//*[@pl_prop='.AccountPromotionLists']
+#Headers inside Account Promotion Table
+${PromotionCode_Field_AccountPromotionTable_Locator}    xpath=(//div[1][text()='Promotion Code'])[2]
+${PromotionName_Field_AccountPromotionTable_Locator}    xpath=(//div[1][text()='Promotion Name'])[2]
+${Description_Field_AccountPromotionTable_Locator}      xpath=(//div[1][text()='Description'])[2]
+${PromotionClass_Field_AccountPromotionTable_Locator}   xpath=(//div[1][text()='Promotion Class'])[2]
+${Start_Field_AccountPromotionTable_Locator}        xpath=(//div[1][text()='Start'])[2]
+${End_Field_AccountPromotionTable_Locator}      xpath=(//div[1][text()='End'])[2]
+${Duration_Field_AccountPromotionTable_Locator}     xpath=(//div[1][text()='Duration'])[2]
+${PaymentMode_Field_AccountPromotionTable_Locator}      xpath=(//div[1][text()='Payment Mode'])[2]
+${Attribute_Field_AccountPromotionTable_Locator}    xpath=(//div[1][text()='Attribute'])[2]
+#Contact Text
+${Contact_Text_Locator}    xpath=//h1[contains(text(),'Contact')]
+#Customer Contact List Topic
+${CustomerContactList_Topic_Locator}    xpath=//h2[contains(text(),'Customer Contact List')]
+#Customer Contact List Table
+${CustomerContactList_Table_Locator}    xpath=//*[@pl_prop='D_CustomerContactList.pxResults']
+#Headers inside Customer Contact List Table
+${Primary_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Primary')]
+${SecretPassword_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Secret Password')]
+${Name_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Name')]
+${Authorized_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Authorized')]
+${ID#_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'ID#')]
+${MobileNo_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Mobile No.')]
+${WorkPhone_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Work Phone')]
+${Email_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Email')]
+${Fax_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Fax')]
+${Position_Field_CustomerContactlistTable_Locator}    xpath=//div[contains(text(),'Position')]
+#Payment Text
+${Payment_Text_locator}     xpath=//h1[contains(text(),'Payment')]
+#Credit Limit Info Topic
+${CreditLimitInfo_Topic_Locator}    xpath=//h2[contains(text(),'Credit Limit Info')]
+#Fields inside Credit Limit Info Table
+${AccountName_Field_CreditLimitInfoTable_Locator}   xpath=//*[@id='CT']//span[contains(text(),'Account Name')]
+${Level_Field_CreditLimitInfoTable_Locator}     xpath=//*[@id='CT']//span[contains(text(),'Level')]
+${Service_Field_CreditLimitInfoTable_Locator}   xpath=//*[@id='CT']//span[text()='Service']
+${CreditLimit_Field_CreditLimitInfoTable_Locator}   xpath=(//*[@id='CT']//span[text()='Credit Limit'])[1]
+${AvailableCredit_Field_CreditLimitInfoTable_Locator}   xpath=(//*[@id='CT']//span[text()='Available Credit'])[1]
+${ExpiryDate_Field_CreditLimitInfoTable_Locator}    xpath=//span[contains(text(),'Expiry Date')]
+${MaxTempCreditLimit_Field_CreditLimitInfoTable_Locator}   xpath=//span[contains(text(),'Max Temp Credit Limit')]
+${MaxPermanentCreditLimit_Field_CreditLimitInfoTable_Locator}   xpath=//span[contains(text(),'Max Permanent Credit Limit')]
+${UnpaidSpend_Field_CreditLimitInfoTable_Locator}   xpath=(//*[@id='CT']//span[text()='Unpaid Spend'])[1]
+${BilledUsage_Field_CreditLimitInfoTable_Locator}   xpath=(//*[@id='CT']//span[text()='Billed Usage'])[1]
+${UnbilledUsage_Field_CreditLimitInfoTable_Locator}     xpath=//span[contains(text(),'Unbilled Usage')]
+${OperatorDefinedThresholds_Field_CreditLimitInfoTable_Locator}     xpath=//span[contains(text(),'Operator Defined Thresholds')]
+${ResetAvailableDay_Field_CreditLimitInfoTable_Locator}     xpath=//span[contains(text(),'Reset Available Day')]
+${ResetAvailableUnit_Field_CreditLimitInfoTable_Locator}    xpath=//span[contains(text(),'Reset Available Unit')]
+#Invoice History Topic
+${InvoiceHistory_Topic_Locator}    xpath=//*/h2[contains(text(),'Invoice History')]
+#Invoice History Table
+${InvoiceHistory_Table_Locator}    xpath=//*[@id='bodyTbl_right'][contains(@pl_prop,'D_AccountBills.pxResults')]
+#Fields inside Invoice History Table
+${ListMonths_Dropdown_InvoiceHistoryTable_Locator}    id=NumberOfMonths
+${Invoice#_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Invoice #')]
+${Status_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Status')]
+${InvoiceAmt(IncVAT)_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Invoice Amt (Inc VAT)')]
+${VATAmount_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'VAT Amount')]
+${WithholdingTax_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Withholding Tax')]
+${Outstanding(IncVAT)_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Outstanding (Inc VAT)')]
+${PaymentAllocationAmt_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Payment Allocation Amt')]
+${PendingDisputes_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Pending Disputes')]
+${StartEndDate_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Start - End Date')]
+${Duedate_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Due Date')]
+${BANo_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'BA No.')]
+${InvoiceDate_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Invoice Date')]
+${ActualBillDate_Field_InvoiceHistoryTable_Locator}    xpath=//div[contains(text(),'Actual Bill Date')]
+#Payment History Topic
+${PaymentHistory_Topic_Locator}    xpath=//h2[contains(text(),'Payment History')]
+#Payment History Table
+${PaymentsHistoryTable_Locator}    xpath=//*[@pl_prop='D_DT_QueryReceiptsAndCNs.pxResults']
+#Fields inside Payment History Table
+${DropdownMonths_PaymentHistory_Locator}    id=NumberOfMonthsPaymentHistory
+${PayFor_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Pay For')]
+${EntryEDC_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Entry EDC')]
+${BANo_Field_PaymentHistory_Locator}    xpath=(//div[contains(text(),'BA No.')])[2]
+${ReceiptDNCNNo_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt DN/CN No.')]
+${AdditionalPaymentReference_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Additional Payment Reference')]
+${ReceiptAmt_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt Amt')]
+${TaxAmt_Field_PaymentHistory_Locator}    xpath=(//div[contains(text(),'Tax Amt')])[1]
+${WHTTaxAmt_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'WHT Tax Amt')]
+${ReceiptDate_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt Date')]
+${PaymentChannel_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'ช่องทางรับชำระ')]
+${Location_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Location')]
+${InvoiceNo_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Invoice No.')]
+${InvoiceDueDate_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Invoice Due Date')]
+${ReceiptStatus_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt Status')]
+${CancelReason_Field_PaymentHistory_Locator}    xpath=//div[contains(text(),'Cancelled Reason')]
+#Campaigns Text
+${HeaderCampaigns_Text_Locator}    xpath=//h1[contains(text(),'Campaigns')]
+#Associated Campaigns Topic
+${AssociatedCampaigns_Topic_Locator}    xpath=//h2[contains(text(),'Associated Campaigns')]
+#Associated Campaigns Table
+${AssociatedCampaigns_Table_Locator}    xpath=//*[@pl_prop='D_CAAssociatedCampaignList.pxResults']
+#Fields inside Associated Campaigns Table
+${MobileNoAccountNo_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'MobileNo./')])[1]
+${CreatedDate_Field_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Created')]
+${LastUpdateDate_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Last Update')])[1]
+${CampaignName_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Campaign')])[1]
+${CampaignLevel_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Campaign')])[2]
+${Channel_Field_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Channel')]
+${CampaignStatus_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Campaign')])[3]
+${ContactStatus_Field_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Contact')]
+${OutcomeReason_Field_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Outcome')]
+${Attempt_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Attempt')])[1]
+${Comment_Field_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Comment')])[1]
+#Siebel Contact List Text
+${SiebelContactList_Text_AssociatedCampaigns_Locator}    xpath=//h2[contains(text(),'Siebel Contact List')]
+#Siebel Contact List Table
+${SiebelContactList_Table_Locator}    xpath=//*[@pl_prop='D_QueryAssoSiebelContactList.pxResults']
+#Fields inside Siebel Contact List Table
+${MobileNoAccountNo_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'MobileNo./')])[2]
+${LastUpdateDate_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Last Update')])[2]
+${CampaignCode_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Campaign Code')]
+${CampaignName_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Campaign Name')]
+${CampaignLevel_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Campaign Level')]
+${Attempt_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Attempt')])[2]
+${Comment_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=(//div[contains(text(),'Comment')])[2]
+${UpdateBy_Field_SiebelContactList_AssociatedCampaigns_Loactor}    xpath=//div[contains(text(),'Update By')]
+#Additional/Missing locators created on 26th Feb, Monday
+${NegoFlag_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Nego Flag')]
+#Locators Created By Shabhash
+#${AccountPromotion (BA)_Table_Locator}    xpath=//*[@pl_prop='.AccountPromotionLists']
+#${AccountPromotion (BA)_Text}    xpath=//label[contains(text(),'Account Promotion (BA)')]
+#${PromotionCode_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Promotion Code')])[3]
+#${PromotionName_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Promotion Name')])[3]
+#${Description_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Description')])[3]
+#${PromotionClass_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Promotion Class')])[3]
+#${Start_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Start')])[4]
+#${End_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'End')])[3]
+#${Duration_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Duration')])[3]
+#${PaymentMode_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Payment Mode')])[3]
+#${Attribute_Field_AccountPromotion (BA) Table_Locator}    xpath=(//div[1][contains(text(),'Attribute')])[4]
+${UnlimitedFlag_Field_CreditLimitInfoTable_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Unlimited Flag')]
+${TemporaryCreditLimit_Field_CreditLimitInfoTable_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Temporary Credit Limit')]
+#Locators Created By Dome
+
+#Locators Created By Anusha
+###${Field_AvailableCredit_CreditLimitInfo_Locator}    xpath=(//*[@id='CT']//span[contains(text(),'Available Credit')])[2]
+${Field_AdvancedPayment_CreditLimit Info_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Advanced Payment')]
+${Field_BilledUsage_CreditLimitInfo_Locator}    xpath=//span[contains(text(),'Billed Usage')])[1]
+${Field_UnbilledUsage_CreditLimitInfo_Locator}    xpath=//span[contains(text(),'Unbilled Usage')]
+${Field_UnpaidSpend_CreditLimitInfo_Locator}    xpath=(//span[contains(text(),'Unpaid Spend')])[1]
+${Field_RecurringFee_CreditLimitInfo_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Recurring Fee')]
+${Field_OneTimeFee_CreditLimit Info_Locator}    xpath=//*[@id='CT']//span[contains(text(),'One Time Fee')]
+${Field_LastBillDate_CreditLimitInfo_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Last Bill Date')]
+${Field_Next Bill Date_Credit Limit Info_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Next Bill Date')]
+${Field_ExemptFlag_CreditLimitInfo_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Exempt Flag')]
+${Field_Exempt Effective Date_Credit Limit Info_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Exempt Effective Date')]
+${Field_Exempt Expire Date_Credit Limit Info_Locator}    xpath=//*[@id='CT']//span[contains(text(),'Exempt Expire Date')]
+${Topic_Invoice History_Locator}    xpath=//*/h2[contains(text(),'Invoice History')]
+${Dropdown_Invoice History_Locator}    id=NumberOfMonths
+${Dropdown_3Months_InvoiceHistory_Locator}    xpath=//*[@id='NumberOfMonths']//option[text()='3 Months']
+${Dropdown_6Months_InvoiceHistory_Locator}    xpath=//*[@id='NumberOfMonths']//option[text()='6 Months']
+${Dropdown_12Months_InvoiceHistory_Locator}    xpath=//*[@id='NumberOfMonths']//option[text()='12 Months']
+${Table_Invoice History_Locator}    xpath=//*[@id='bodyTbl_right'][contains(@pl_prop,'D_AccountBills.pxResults')]
+${Field_Invoice #_Invoice History_Locator}    xpath=//div[contains(text(),'Invoice #')]
+${Field_Status_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Status')]
+${Field_InvoicAmt (Inc VAT)_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Invoice Amt (Inc VAT)')]
+${Field_VATAmount_InvoiceHistory_Locator}    xpath=//div[contains(text(),'VAT Amount')]
+${Field_WithholdingTax_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Withholding Tax')]
+${Field_Outstanding(Inc VAT)_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Outstanding (Inc VAT)')]
+${Field_PaymentAllocationAmt_Invoice History_Locator}    xpath=//div[contains(text(),'Payment Allocation Amt')]
+${Field_Pending Disputes_Invoice History_Locator}    xpath=//div[contains(text(),'Pending Disputes')]
+${Field_Start - EndDate_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Start - End Date')]
+${Field_DueDate_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Due Date')]
+${Field_BANo_InvoiceHistory_Locator}    xpath=//div[contains(text(),'BA No.')]
+${Field_InvoiceDate_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Invoice Date')]
+${Field_ActualBillDate_InvoiceHistory_Locator}    xpath=//div[contains(text(),'Actual Bill Date')]
+${Topic_PaymentHistory_Locator}    xpath=//h2[contains(text(),'Payment History')]
+${Dropdown_PaymentHistory_Locator}    id=NumberOfMonthsPaymentHistory
+${Dropdown_3Months_PaymentHistory_Locator}    xpath=//*[@id='NumberOfMonthsPaymentHistory']//option[text()='3 Months']
+${Dropdown_6Months_PaymentHistory_Locator}    xpath=//*[@id='NumberOfMonthsPaymentHistory']//option[text()='6 Months']
+${Dropdown_12Months_PaymentHistory_Locator}    xpath=//*[@id='NumberOfMonthsPaymentHistory']//option[text()='12 Months']
+${Table_PaymentHistory_Locator}    xpath=//*[@pl_prop='D_DT_QueryReceiptsAndCNs.pxResults']
+${Field_PayFor_PaymentHistory_Locator}    xpath=//div[contains(text(),'Pay For')]
+${Field_EntryEDC_PaymentHistory_Locator}    xpath=//div[contains(text(),'Entry EDC')]
+${Field_BANo_PaymentHistory_Locator}    xpath=(//div[contains(text(),'BA No.')])[2]
+${Field_ReceiptDN/CN No_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt DN/CN No.')]
+${Field_AdditionalPaymentRefrence_PaymentHistory_Locator}    xpath=//div[contains(text(),'Additional Payment Reference')]
+${Field_ReceiptAmt_PaymentHistory_locator}    xpath=//div[contains(text(),'Receipt Amt')]
+${Field_TaxAmt_PaymentHistory_Locator}    xpath=(//div[contains(text(),'Tax Amt')])[1]
+${Field_WHTTaxAmt_PaymentHistory_Locator}    xpath=//div[contains(text(),'WHT Tax Amt')]
+${Field_ReceiptDate_PaymentHistory_Locator}    xpath=//div[contains(text(),'Receipt Date')]
+${Field_ช่องทางรับชำระ_PaymentHistory_Locator}    xpath=//div[contains(text(),'ช่องทางรับชำระ')]
+${Field_Location_PaymentHistory_Locator}    xpath=//div[contains(text(),'Location')]
+${Field_InvoiceNo_PaymentHistory_Locator}    xpath=//div[contains(text(),'Invoice No.')]
+${Expand_Row1_RecentInteractions_Locator}    xpath=(//span[@title="press enter to expand row"])[1]
+
+
+#Locators changed by Rajani
+#${Field_AvailableCredit_CreditLimitInfo_Locator}    xpath=(//*[@id='CT']//span[contains(text(),'Available Credit')])[2]
+#${BilledUsage_Field_CreditLimitInfoTable_Locator}    xpath=(//span[contains(text(),'Billed Usage')])[2]
+#${CreditLimit_Field_CreditLimitInfoTable_Locator}    xpath=(//*[@id='CT']//span[text()='Credit Limit'])[2]
+
+#Locators by Tausif
+${FraudInfo_Field_CustomerAndBilling_Locator}    xpath=//span[contains(text(),'Fraud Info')]
+${Field_Validity_AssetDetail_Locator}       xpath=//span[text()='Validity']
+${RecentInteractions_Table1_Locator}    xpath=//*[@pl_prop='D_AC_InteractionHistory.pxResults']
+#${Table_RecentInteractions_Locator}    xpath=//table[@id='gridLayoutTable']
+${Field_Customer_RecentInteractions_Locator}    xpath=//div[text()='Customer:']
+${Field_ContactNumber_RecentInteractions_Locator}    xpath=//div[text()='Contact Number :']
+${Field_Comment_RecentInteractions_Locator}    xpath=//div[text()='Comment :']
+${Field_NumberofCase_RecentInteractions_Locator}    xpath=//div[text()='Number of Case :']
+${Field_AfterExpanding_RecentInteractions_Locator}    xpath=//span[contains(text(),'Expand Case Recent Interactions')]
+${Field_CasesCreatedDuringThisInteraction_RecentInteractions_Locator}       xpath=//label[text()='Cases created during this interaction']
+${ExpandFirstRow_RecentInteractions_Locator}  xpath=(//span[@class='expandRowDetails'])[1]

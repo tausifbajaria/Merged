@@ -1,0 +1,1020 @@
+*** Settings ***
+Documentation     This contains all the Keywords related to PMS application
+Library           Selenium2Library
+Library           Dialogs
+Library           ExcelLibrary
+Library           OperatingSystem
+Library           String
+Library           Collections
+Library           Screenshot
+Library           Process
+Library           ../Libraries/String_IM.py
+Library           ../Libraries/ID_IM.py
+Resource          Locators_IM.txt
+Resource          Resource_Environment.txt
+
+*** Variables ***
+${FirefoxProfilePath}    ${CURDIR}/../Common\\FirefoxProfile\\lamx0e9v.default
+${DownloadDir}    ${CURDIR}/../Common\\Download
+#${ElementSearchTime}    10
+${TestDataSheetName}    IM
+${TestDataExcelName}    IM_TestDataSheet.xls
+${Check}          ${TRUE}
+${MaxLoop}        999
+${ForCheck}       ${EMPTY}
+
+*** Keywords ***
+wCustomer Portal Prerequisite
+    Fetch Input Data From Excel
+    Open Browser    ${IMURL}    ff_profile_dir=${FirefoxProfilePath}
+    wIM SignIn    ${UserName}    ${Password}
+    wIM Open Inbound Call
+    Sleep    5
+
+Fetch Input Data From Excel
+    Open Excel    ${CURDIR}/../TestData/${TestDataExcelName}
+    ${rowcount}    Get Row Count    ${TestDataSheetName}
+    @{ITEMS}    Get Column Values    ${TestDataSheetName}    0
+    : FOR    ${INDEX}    IN RANGE    0    ${rowcount}
+    \    ${RETURNVALUE}    Run Keyword And Return Status    Should Contain    '@{ITEMS[${INDEX}]}'    '${TEST_NAME}'
+    \    Run Keyword If    ${RETURNVALUE}    Set Test Variable    ${rownum}    ${INDEX}
+    ${colcount}    Get Column Count    ${TestDataSheetName}
+    : FOR    ${col}    IN RANGE    0    ${colcount}
+    \    ${val}    Read Cell Data By Coordinates    ${TestDataSheetName}    ${col}    ${rownum}
+    \    ${key}    Read Cell Data By Coordinates    ${TestDataSheetName}    ${col}    0
+    \    Set Test Variable    ${key}    ${val}
+
+wIM SignIn
+    [Arguments]    ${un}    ${pw}
+    input text    ${UsernameInput_SignIn_Locator}    ${un}
+    input text    ${PasswordInput_SignIn_Locator}    ${pw}
+    click element    ${LoginButton_SignIn_Locator}
+    set global variable    ${ForCheck}    ${un}
+    sleep    5
+
+wIM Open Inbound Call
+    wait until page contains element    ${NewButton_Home_Locator}    30
+    click element    ${NewButton_Home_Locator}
+    wait until page contains element    ${InboundCallButton_Home_Locator}
+    click element    ${InboundCallButton_Home_Locator}
+    log to console    waiting iframe loading...
+
+wIM Select Current Frame
+    sleep    5
+    ${id} =    wIM Get ID Iframe
+    select frame    xpath=//*[@id="${id}"]
+
+wIM Get ID Iframe
+    ${num} =    wIM Get Number Of Iframe
+    ${id} =    Get Element Attribute    ${iframeWarpperClass_IM_Locator}[${num}]/div[2]/iframe@id
+    log to console    iframe id: ${id}
+    [Return]    ${id}
+
+wIM Get Number Of Iframe
+    ${numIframe} =    get matching xpath count    xpath=//div[@class="iframe-wrapper yui-module"]
+    log to console    number of div iframe: ${numIframe}
+    [Return]    ${numIframe}
+
+wIM Search Customer By Assets No
+    [Arguments]    ${assetsNumber}
+    Wait Until Page Contains Element    ${AssetNumberInput_Home_Locator}    ${ELEMENTSEARCHTIME}    Element is not visible
+    wWait And Click    ${AssetNumberInput_Home_Locator}
+    sleep    1
+    wWait And Input    ${AssetNumberInput_Home_Locator}    ${assetsNumber}
+    wWait And Click    ${SearchAssetButton_Home_Locator}
+    wait until page contains element    ${SearchAssetResult_Home_Locator}    ${ELEMENTSEARCHTIME}
+
+wIM Test
+    run keyword and ignore error    log to console    >>>>
+    go to    ${IMURL}
+
+wIM Open
+    wOpen Firefox Browser    ${IMURL}
+
+wOpen Firefox Browser
+    [Arguments]    ${url}    ${FirefoxProfilePath}=${FirefoxProfilePath}
+    open browser    ${url}    ff_profile_dir=${CURDIR}\\${FirefoxProfilePath}
+    sleep    2
+    set selenium speed    ${SPEED}
+    Maximize Browser Window
+
+wInput And Select Asset No
+    wIM Select Current Frame
+    wIM Search Customer By Assets No    ${AssetsNo}
+    ${resultNo} =    get text    ${SearchAssetResult_Home_Locator}
+    should be equal as strings    ${resultNo}    ${AssetsNo}
+    sleep    2
+    #changed by tausif - click element to wwait and click
+    wwait and click    ${SearchAssetResult_Home_Locator}    ${ELEMENTSEARCHTIME}
+    Sleep    2
+    Unselect Frame
+    log to console    waiting customer portal loading...
+    Wait Until Page Contains Element    ${TopicName_CustomerPortal_Locator}    ${ELEMENTSEARCHTIME}
+    Capture Page Screenshot
+    log to console    checking customer portal...
+    sleep    5
+
+wValidate Matching Text
+    [Arguments]    ${LocatorOfTextToBeVerified}    ${AttName01}
+    ${TextTopic}=    Get Text    ${LocatorOfTextToBeVerified}
+    log    Comparing: '${TextTopic}' and '${AttName01}'
+    Should Match Regexp    ${TextTopic}    .*${AttName01}
+    log    Text Topic "${AttName01}" verified.
+    wScroll To Element    ${LocatorOfTextToBeVerified}
+    Capture Page Screenshot
+
+wValidate Matching Text By Value
+    [Arguments]    ${LocatorOfTextToBeVerified}    ${AttName01}
+    ${TextTopic}=    Get Value    ${LocatorOfTextToBeVerified}
+    log    Comparing: '${TextTopic}' and '${AttName01}'
+    Should Match Regexp    ${TextTopic}    .*${AttName01}
+    log    Text "${AttName01}" verified.
+    wScroll To Element    ${LocatorOfTextToBeVerified}
+    Capture Page Screenshot
+
+wValidate Exact Text
+    [Arguments]    ${LocatorOfTextToBeVerified}    ${AttName01}    ${ElementType}
+    Wait Until Page Contains Element    ${LocatorOfTextToBeVerified}   ${ELEMENTSEARCHTIME}     Element is not visible
+    wScroll To Element    ${LocatorOfTextToBeVerified}
+    ${TextTopic}=    Get Text    ${LocatorOfTextToBeVerified}
+    log    Comparing: '${TextTopic}' and '${AttName01}'
+    Run Keyword Unless    '${TextTopic}'=='${AttName01}'    log    Text "${TextTopic}" does not match with "${AttName01}"
+    Should Be Equal As Strings    ${TextTopic}    ${AttName01}
+    log    ${ElementType} - "${AttName01}" verified.
+    Capture Page Screenshot
+
+wValidate Exact Text By Value
+    [Arguments]    ${LocatorOfTextToBeVerified}    ${AttName01}
+    ${TextTopic}=    Get Value    ${LocatorOfTextToBeVerified}
+    log    Comparing: '${TextTopic}' and '${AttName01}'
+    Should Match Regexp    ${TextTopic}    ${AttName01}
+    log    Text "${AttName01}" verified.
+    wScroll To Element    ${LocatorOfTextToBeVerified}
+    Capture Page Screenshot
+
+wScroll To Element By Xpath
+    [Arguments]    ${xpath}
+    ${xpath1} =    Replace String    ${xpath}    xpath=    ${EMPTY}
+    Execute Javascript    document.evaluate("${xpath1}",document,null, XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue.scrollIntoView(true);
+
+wScroll To Element
+    [Arguments]    ${element_locator}
+    #Sample ID locator:    xpath=//*/h2[contains(text(),'Invoice History')]
+    #Sample xpath locator:    id=NumberOfMonths
+    ${temp}=    run keyword and ignore error    should match regexp    ${element_locator}    xpath=.*
+    run keyword if    ${temp}==('PASS', u"${element_locator}")    wScroll To Element By Xpath    ${element_locator}
+    ...    ELSE    wScroll To Element By ID    ${element_locator}
+
+wScroll To Element By ID
+    [Arguments]    ${ID}
+    ${ID1} =    Replace String    ${ID}    id=    ${EMPTY}
+    Execute Javascript    document.getElementById("${ID1}").scrollIntoView(true);
+
+wValidate Element Present
+    [Arguments]    ${element_locator}    ${element_name}    ${element_type}
+    wait until element is visible    ${element_locator}    ${ELEMENTSEARCHTIME}
+    wScroll To Element    ${element_locator}
+    Sleep    2
+    Log    ${element_type} - "${element_name}" is visible
+    Capture Page Screenshot
+
+Delete this
+    log to console      Element Search Time: ${ELEMENTSEARCHTIME}
+
+wWait And Click
+    [Arguments]    ${Locator}    ${timeout}=${ELEMENTSEARCHTIME}
+    [Documentation]    Waits for the Element given in the locator and then clicks the element
+    Wait Until Page Contains Element    ${Locator}    ${timeout}    "Element is not seen in the given time"
+    Click Element    ${Locator}
+    Log    Clicked element at ${Locator}
+
+wWait And Input
+    [Arguments]    ${Locator}    ${Text}    ${timeout}=${ELEMENTSEARCHTIME}
+    [Documentation]    Waits for the Element given in the locator and then input the text in the locator
+    Wait Until Page Contains Element    ${Locator}    ${timeout}    "TextBox is not seen in the given time"
+    Input Text    ${Locator}    ${Text}
+    Log    Inputted ${Text} at ${Locator}
+
+wValidate Field_Invoice Due Date_Payment History
+    wValidate Exact Text    ${TextInvoiceDueDate_PaymentHistory_Locator}    ${Field_InvoiceDueDate_PaymentHistory}    Field
+
+wValidate Field_Receipt Status_Payment History
+    wValidate Exact Text    ${TextReceiptStatus_PaymentHistory_Locator}    $(Field_RecieptStatus_PaymentHistory}    Field
+    #Unique Functions Created By Prabhu
+
+wValidate Field_Cancelled Reason_Payment History
+    wValidate Exact Text    ${Field_CancelledReason_PaymentHistory_Locator}    ${Field_CancelledReason_PaymentHistory}    Field
+
+wValidate Field_Prepaid Iden_Asset Detail
+    wValidate Exact Text    ${Field_PrepaidIden_AssetDetail_Locator}    ${Field_PrepaidIden_AssetDetail}    Field
+
+wValidate Field_Suspend Request Flag_Asset Detail
+    wValidate Exact Text    ${Field_SuspendRequestFlag_AssetDetail_Locator}    ${Field_SuspendRequestFlag_AssetDetail}    Field
+
+wValidate Field_Error Lock_Asset Detail
+    wValidate Exact Text    ${Field_ErrorLock_AssetDetail_Locator}    ${Field_ErrorLock_AssetDetail}    Field
+
+wValidate Field_Balance_Asset Detail
+    wValidate Exact Text    ${Field_Balance_AssetDetail_Locator}    ${Field_Balance_AssetDetail}    Field
+
+wValidate Field_Validity_Asset Detail
+    wValidate Exact Text    ${Field_Validity_AssetDetail_Locator}    ${Field_Validity_AssetDetail}    Field
+
+wValidate Field_Active Stop_Asset Detail
+    wValidate Exact Text    ${Field_ActiveStop_AssetDetail_Locator}    ${Field_ActiveStop_AssetDetail}    Field
+
+wValidate Field_Suspend Stop_Asset Detail
+    wValidate Exact Text    ${Field_SuspendStop_AssetDetail_Locator}    ${Field_SuspendStop_AssetDetail}    Field
+
+wValidate Field_Disable Stop_Asset Detail
+    wValidate Exact Text    ${Field_DisableStop_AssetDetail_Locator}    ${Field_DisableStop_AssetDetail}    Field
+
+wValidate Field_Monthly Usage_Asset Detail
+    wValidate Exact Text    ${Field_MonthlyUsage_AssetDetail_Locator}    ${Field_MonthlyUsage_AssetDetail}    Field
+
+wValidate Field_Emergency Airtime_Asset Detail
+    wValidate Exact Text    ${Field_EmergencyAirtime_AssetDetail_Locator}    ${Field_EmergencyAirtime_AssetDetail}    Field
+
+wValidate Field_Last Recharge Date_Asset Detail
+    wValidate Exact Text    ${Field_LastRechargeDate_AssetDetail_Locator}    ${Field_LastRechargeDate_AssetDetail}    Field
+
+wValidate Field_Other_Recent Interactions
+    wValidate Exact Text    ${Field_Other_RecentInteractions_Locator}    ${Field_Other_RecentInteractions}    Field
+
+wValidate Field_Account Name_Credit Limit Info
+    wValidate Exact Text    ${AccountName_Field_CreditLimitInfoTable_Locator}   ${Field_AccountName_CreditLimitInfo}    Field
+
+wValidate Field_Level_Credit Limit Info
+    wValidate Exact Text     ${Level_Field_CreditLimitInfoTable_Locator}    ${Field_Level_CreditLimitInfo}      Field
+
+wValidate Field_Service_Credit Limit Info
+    wValidate Exact Text    ${Service_Field_CreditLimitInfoTable_Locator}    ${Field_Service_CreditLimitInfo}   Field
+
+wValidate Field_Expiry Date_Credit Limit Info
+    wValidate Exact Text    ${ExpiryDate_Field_CreditLimitInfoTable_Locator}     ${Field_ExpiryDate_CreditLimitInfo}    Field
+
+wValidate Field_Max Temp Credit Limit_Credit Limit Info
+    wValidate Exact Text    ${MaxTempCreditLimit_Field_CreditLimitInfoTable_Locator}    ${Field_MaxTempCreditLimit_CreditLimitInfo}  Field
+
+wValidate Field_Max Permanent Credit Limit_Credit Limit Info
+    wValidate Exact Text    ${MaxPermanentCreditLimit_Field_CreditLimitInfoTable_Locator}   ${Field_MaxPermanentCreditLimit_CreditLimitInfo}     Field
+
+wValidate Field_Operator Defined Thresholds_Credit Limit Info
+    wValidate Exact Text    ${OperatorDefinedThresholds_Field_CreditLimitInfoTable_Locator}    ${Field_OperatorDefinedThresholds_CreditLimitInfo}     Field
+
+wValidate Field_Reset Available Day_Credit Limit Info
+    wValidate Exact Text    ${ResetAvailableDay_Field_CreditLimitInfoTable_Locator}     ${Field_ResetAvailableDay_CreditLimitInfo}   Field
+
+wValidate Field_Reset Available Unit_Credit Limit Info
+    wValidate Exact Text     ${ResetAvailableUnit_Field_CreditLimitInfoTable_Locator}    ${Field_ResetAvailableUnit_CreditLimitInfo}   Field
+    #Unique Functions created by Prabu
+
+wValidate Text Field_Search Topic
+    wValidate Exact Text    ${TextField_Search Topic_Locator}    ${TextField_SearchTopic}    Text
+
+wValidate Text_Customer Profile
+    wValidate Exact Text    ${Text_CustomerProfile_Locator}    ${Text_CustomerProfile}    Text
+
+wValidate Topic_Customer & Billing
+    wValidate Exact Text    ${Topic_CustomerAndBilling_Locator}    ${Topic_Customer&Billing}    Topic
+
+wValidate Field_Customer Name_Customer & Billing
+    wValidate Exact Text    ${Field_CustomerName_Customer&Billing_Locator}    ${Field_CustomerName_Customer&Billing}    Field
+
+wValidate Field_ID Type_Customer & Billing
+    wValidate Exact Text    ${IDType_Field_CustomerAndBilling_Locator}    ${Field_IDType_Customer&Billing}    Field
+
+wValidate Field_ID#_Customer & Billing
+    wValidate Exact Text    ${ID#_Field_CustomerAndBilling_Locator}    ${Field_ID#_Customer&Billing}    Field
+
+wValidate Field_e-Statement_Customer & Billing
+    wValidate Exact Text    ${E-Statement_Field_CustomerAndBilling_Locator}    ${Field_e-Statement_Customer&Billing}    Field
+
+wValidate Field_Credit Card Payment History_Customer & Billing
+    wValidate Exact Text    ${CreditCardPaymentHistory_Field_CustomerAndBilling_Locator}    ${Field_CreditCardPaymentHistory_Customer&Billing}    Field
+
+wValidate Field_Itemized Billed Flag_Customer & Billing
+    wValidate Exact Text    ${ItemizedBilledFlag_Field_CustomerAndBilling_Locator}    ${Field_ItemizedBilledFlag_Customer&Billing}    Field
+
+wValidate Field_Bill Cycle_Customer & Billing
+    wValidate Exact Text    ${BillCycle_Field_CustomerAndBilling_Locator}    ${Field_BillCycle_Customer&Billing}    Field
+
+wValidate Field_Payment Term_Customer & Billing
+    wValidate Exact Text    ${PaymentTerm_Field_CustomerAndBilling_Locator}    ${Field_PaymentTerm_Customer&Billing}    Field
+
+wValidate Field_Payment Method_Customer & Billing
+    wValidate Exact Text    ${PaymentMethod_Field_CustomerAndBilling_Locator}    ${Field_PaymentMethod_Customer&Billing}    Field
+
+wValidate Field_Bill System_Customer & Billing
+    wValidate Exact Text    ${BillSystem_Field_CustomerAndBilling_Locator}    ${Field_BillSystem_Customer&Billing}    Field
+
+wValidate Field_Outstanding Balance_Customer & Billing
+    wValidate Exact Text    ${OutStandingBalance_Field_CustomerAndBilling_Locator}    ${Field_OutstandingBalance_Customer&Billing}    Field
+
+wValidate Field_Overpayment_Customer & Billing
+    wValidate Exact Text    ${OverPayment_Field_CustomerAndBilling_Locator}    ${Field_ยอดชำระเกิน/ล่วงหน้า_Customer&Billing}    Field
+
+wValidate Field_Due Date_Customer & Billing
+    wValidate Exact Text    ${DueDate_Field_CustomerAndBilling_Locator}    ${Field_DueDate_Customer&Billing}    Field
+
+wValidate Field_Watchlist Status_Customer & Billing
+    wValidate Exact Text    ${WatchlistStatus_Field_CustomerAndBilling_Locator}    ${Field_WatchlistStatus_Customer&Billing}    Field
+
+wValidate Field_Watchlist Info_Customer & Billing
+    wValidate Exact Text    ${WatchlistInfo_Field_CustomerAndBilling_Locator}    ${Field_WatchlistInfo_Customer&Billing}    Field
+
+wValidate Field_Fraud Info_Customer & Billing
+    wValidate Exact Text    ${FraudInfo_Field_CustomerAndBilling_Locator}    ${Field_FraudInfo_Customer&Billing}    Field
+
+wValidate Field_Nego Flag_Customer & Billing
+    wValidate Exact Text    ${NegoFlag_Field_CustomerAndBilling_Locator}    ${Field_NegoFlag_Customer&Billing}    Field
+
+wDisplay Fields_Customer & Billing_Post - IRB
+    wValidate Field_Customer Name_Customer & Billing
+    wValidate Field_ID Type_Customer & Billing
+    wValidate Field_ID#_Customer & Billing
+    wValidate Field_e-Statement_Customer & Billing
+    wValidate Field_Credit Card Payment History_Customer & Billing
+    wValidate Field_Itemized Billed Flag_Customer & Billing
+    wValidate Field_Bill Cycle_Customer & Billing
+    wValidate Field_Payment Term_Customer & Billing
+    wValidate Field_Payment Method_Customer & Billing
+    wValidate Field_Bill System_Customer & Billing
+    wValidate Field_Outstanding Balance_Customer & Billing
+    wValidate Field_Overpayment_Customer & Billing
+    wValidate Field_Due Date_Customer & Billing
+    wValidate Field_Watchlist Status_Customer & Billing
+    Comment    wValidate Field_Watchlist Info_Customer & Billing
+    wValidate Field_Nego Flag_Customer & Billing
+
+wValidate Topic_Asset Detail
+    wValidate Exact Text    ${AssetDetail_Topic_Locator}    ${Topic_AssetDetail}    Topic
+
+wValidate Textbox_Mobile
+    wValidate Exact Text    ${MobileTextbox_Field_AssetDetail_Locator}    ${Textbox_Mobile}    Text box
+
+wValidate Field_Product_Asset Detail
+    wValidate Exact Text    ${Product_Field_AssetDetail_Locator}    ${Field_Product_AssetDetail}    Field
+
+wValidate Field_Status_Asset Detail
+    wValidate Exact Text    ${Status_Field_AssetDetail_Locator}    ${Field_Status_AssetDetail}    Field
+
+wValidate Field_Charge Type_Asset Detail
+    wValidate Exact Text    ${ChargeType_Field_AssetDetail_Locator}    ${Field_ChargeType_AssetDetail}    Field
+
+wValidate Field_Service Year_Asset Detail
+    wValidate Exact Text    ${ServiceYear_Field_AssetDetail_Locator}    ${Field_ServiceYear_AssetDetail}    Field
+
+wValidate Field_Segment_Asset Detail
+    wValidate Exact Text    ${Segment_Field_AssetDetail_Locator}    ${Field_Segment_AssetDetail}    Field
+
+wValidate Field_PA Group_Asset Detail
+    wValidate Exact Text    ${PAGroup_Field_AssetDetail_Locator}    ${Field_PAGroup_AssetDetail}    Field
+
+wValidate Field_SIM Serial No_Asset Detail
+    wValidate Exact Text    ${SIMNumber_Field_AssetDetail_Locator}    ${Field_SIMSerialNo_AssetDetail}    Field
+
+wValidate Field_ARPU_Asset Detail
+    wValidate Exact Text    ${ARPU_Field_AssetDetail_Locator}    ${Field_ARPU_AssetDetail}    Field
+
+wValidate Field_Device Contract_Asset Detail
+    wValidate Exact Text    ${DeviceContract_Field_AssetDetail_Locator}    ${Field_DeviceContract_AssetDetail}    Field
+
+wValidate Field_Main Promotion_Asset Detail
+    wValidate Exact Text    ${MainPromotion_Field_AssetDetail_Locator}    ${Field_MainPromotion_AssetDetail}    Field
+
+wDisplay Fields_Asset Detail
+    wValidate Topic_Asset Detail
+    wValidate Textbox_Mobile
+    wValidate Field_Product_Asset Detail
+    wValidate Field_Status_Asset Detail
+    wValidate Field_Charge Type_Asset Detail
+    wValidate Field_Service Year_Asset Detail
+    wValidate Field_Segment_Asset Detail
+    wValidate Field_PA Group_Asset Detail
+    wValidate Field_SIM Serial No_Asset Detail
+    wValidate Field_ARPU_Asset Detail
+    wValidate Field_Device Contract_Asset Detail
+    wValidate Field_Main Promotion_Asset Detail
+
+wValidate Text_Customer Activity
+    wValidate Exact Text    ${CustomerActivity_Text_Locator}    ${Text_CustomerActivity}    Text
+
+wValidate Topic_Recent Interactions
+    wValidate Exact Text    ${RecentInteractions_Topic_Locator}    ${Topic_RecentInteractions}    Topic
+
+wValidate Table_Recent Interactions
+    wValidate Element Present    ${RecentInteractions_Table1_Locator}    Recent Interactions    Table
+
+wValidate Field_Not yet determined_Recent Interactions
+    wValidate Exact Text    ${NotYetDetermined_Field_RecentInteractionsTable1_Locator}    ${Field_Notyetdetermined_RecentInteractions}    Field
+
+wValidate Field_Interaction No_Recent Interactions
+    wValidate Exact Text    ${InteractionNo_Field_RecentInteractionsTable1_Locator}    ${Field_InteractionNo_RecentInteractions}    Field
+
+wValidate Field_Created by_Recent Interactions
+    wValidate Exact Text    ${CreatedBy_Field_RecentInteractionsTable1_Locator}    ${Field_Createdby_RecentInteractions}    Field
+
+wValidate Field_Create Date_Recent Interactions
+    wValidate Exact Text    ${CreateDate_Field_RecentInteractionsTable1_Locator}    ${Field_CreateDate_RecentInteractions}    Field
+
+wValidate Field_Duration_Recent Interactions
+    wValidate Exact Text    ${Duration_Field_RecentInteractionsTable1_Locator}    ${Field_Duration_RecentInteractions}    Field
+
+wDisplay Fields_Recent Interactions
+    wValidate Topic_Recent Interactions
+    wValidate Table_Recent Interactions
+    wValidate Field_Not yet determined_Recent Interactions
+    wValidate Field_Interaction No_Recent Interactions
+    wValidate Field_Created by_Recent Interactions
+    wValidate Field_Create Date_Recent Interactions
+    wValidate Field_Duration_Recent Interactions
+    #Unique Functions created by Shabhash
+
+wValidate Topic_Promotion
+    wValidate Exact Text    ${Promotion_Topic_Locator}   ${Topic_Promotion}      Topic
+
+wValidate Table_Asset Promotion_Promotion
+    wValidate Element Present    ${AssetPromotion_Table_Locator}    Asset Promotion    Table
+
+wValidate Text_Asset Promotion_Promotion
+    wValidate Exact Text    ${AssetPromotion_Text_Locator}      ${Text_AssetPromotion_Promotion}    Text
+
+wValidate Field_Promotion Code_Asset Promotion_Promotion
+    wValidate Exact Text    ${PromotionCode_Field_AssetPromotionTable_Locator}    ${Field_Promotion Code_Asset Promotion_Promotion}    Field
+
+wValidate Field_Promotion Name_Asset Promotion_Promotion
+    wValidate Exact Text    ${PromotionName_Field_AssetPromotionTable_Locator}    ${Field_Promotion Name_Asset Promotion_Promotion}    Field
+
+wValidate Field_Description_Asset Promotion_Promotion
+    wValidate Exact Text    ${Description_Field_AssetPromotionTable_Locator}    ${Field_Description_Asset Promotion_Promotion}    Field
+
+wValidate Field_Promotion Class_Asset Promotion_Promotion
+    wValidate Exact Text    ${PromotionClass_Field_AssetPromotionTable_Locator}    ${Field_Promotion Class_Asset Promotion_Promotion}    Field
+
+wValidate Field_Start_Asset Promotion_Promotion
+    wValidate Exact Text    ${Start_Field_AssetPromotionTable_Locator}    ${Field_Start_Asset Promotion_Promotion}    Field
+
+wValidate Field_End_Asset Promotion_Promotion
+    wValidate Exact Text    ${End_Field_AssetPromotionTable_Locator}    ${Field_End_Asset Promotion_Promotion}    Field
+
+wValidate Field_Duration_Asset Promotion_Promotion
+    wValidate Exact Text    ${Duration_Field_AssetPromotionTable_Locator}    ${Field_Duration_Asset Promotion_Promotion}    Field
+
+wValidate Field_Payment Mode_Asset Promotion_Promotion
+    wValidate Exact Text    ${PaymentMode_Field_AssetPromotionTable_Locator}    ${Field_Payment Mode_Asset Promotion_Promotion}    Field
+
+wValidate Field_Attribute_Asset Promotion_Promotion
+    wValidate Exact Text    ${Attribute_Field_AssetPromotionTable_Locator}    ${Field_Attribute_Asset Promotion_Promotion}    Field
+
+wValidate Table_Account Promotion (BA)_Promotion
+    wValidate Element Present       ${AccountPromotion(BA)_Table_Locator}       Account Promotion (BA)   Table
+
+wValidate Text_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${AccountPromotion(BA)_Text_Locator}    ${Text_AccountPromotion(BA)_Promotion}    Text
+
+wValidate Field_Promotion Code_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${PromotionCode_Field_AccountPromotionTable_Locator}    ${Field_PromotionCode_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Promotion Name_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${PromotionName_Field_AccountPromotionTable_Locator}    ${Field_PromotionName_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Description_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${Description_Field_AccountPromotionTable_Locator}    ${Field_Description_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Promotion Class_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${PromotionClass_Field_AccountPromotionTable_Locator}    ${Field_PromotionClass_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Start_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${Start_Field_AccountPromotionTable_Locator}    ${Field_Start_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_End_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${End_Field_AccountPromotionTable_Locator}    ${Field_End_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Duration_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${Duration_Field_AccountPromotionTable_Locator}    ${Field_Duration_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Payment Mode_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${PaymentMode_Field_AccountPromotionTable_Locator}    ${Field_PaymentMode_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Field_Attribute_Account Promotion (BA)_Promotion
+    wValidate Exact Text    ${Attribute_Field_AccountPromotionTable_Locator}    ${Field_Attribute_AccountPromotion(BA)_Promotion}    Field
+
+wValidate Text_Contact_Contact List
+    wValidate Exact Text    ${Contact_Text_Locator}    ${Text_Contact_ContactList}    Text
+
+wValidate Topic_Customer Contact List
+    wValidate Exact Text    ${CustomerContactList_Topic_Locator}    ${Topic_CustomerContactList}    Topic
+
+wValidate Table_Customer Contact List
+    wValidate Element Present    ${CustomerContactList_Table_Locator}    Customer Contact List    Table
+
+wValidate Field_Primary_Customer Contact List
+    wValidate Exact Text    ${Primary_Field_CustomerContactlistTable_Locator}    ${Field_Primary_CustomerContactList}    Field
+
+wValidate Field_Secret Password_Customer Contact List
+    wValidate Exact Text    ${SecretPassword_Field_CustomerContactlistTable_Locator}    ${Field_SecretPassword_CustomerContactList}    Field
+
+wValidate Field_Name_Customer Contact List
+    wValidate Exact Text    ${Name_Field_CustomerContactlistTable_Locator}    ${Field_Name_CustomerContactList}    Field
+
+wValidate Field_Authorized_Customer Contact List
+    wValidate Exact Text    ${Authorized_Field_CustomerContactlistTable_Locator}    ${Field_Authorized_CustomerContactList}    Field
+
+wValidate Field_ID#_Customer Contact List
+    wValidate Exact Text    ${ID#_Field_CustomerContactlistTable_Locator}    ${Field_ID#_Customer Contact List}    Field
+
+wValidate Field_Mobile No_Customer Contact List
+    wValidate Exact Text    ${MobileNo_Field_CustomerContactlistTable_Locator}    ${Field_Mobile No_Customer Contact List}    Field
+
+wValidate Field_Work Phone_Customer Contact List
+    wValidate Exact Text    ${WorkPhone_Field_CustomerContactlistTable_Locator}    ${Field_Work Phone_Customer Contact List}    Field
+
+wValidate Field_Email_Customer Contact List
+    wValidate Exact Text    ${Email_Field_CustomerContactlistTable_Locator}    ${Field_Email_Customer Contact List}    Field
+
+wValidate Field_Fax_Customer Contact List
+    wValidate Exact Text    ${Fax_Field_CustomerContactlistTable_Locator}    ${Field_Fax_Customer Contact List}    Field
+
+wValidate Field_Position_Customer Contact List
+    wValidate Exact Text    ${Position_Field_CustomerContactlistTable_Locator}    ${Field_Position_Customer Contact List}    Field
+
+wValidate Text_Payment_Credit Limit Info
+    wValidate Exact Text    ${Payment_Text_locator}     ${Text_Payment_CreditLimitInfo}  Text
+
+wValidate Topic_Credit Limit Info
+    wValidate Exact Text    ${CreditLimitInfo_Topic_Locator}    ${Topic_CreditLimitInfo}    Topic
+
+wValidate Field_Unlimited Flag_Credit Limit Info
+    wValidate Exact Text    ${UnlimitedFlag_Field_CreditLimitInfoTable_Locator}    ${Field_Unlimited Flag_Credit Limit Info}    Field
+
+wValidate Field_Credit Limit_Credit Limit Info
+    wValidate Exact Text    ${CreditLimit_Field_CreditLimitInfoTable_Locator}  ${Field_CreditLimit_CreditLimitInfo}    Field
+
+wValidate Field_Temporary Credit Limit_Credit Limit Info
+    wValidate Exact Text    ${TemporaryCreditLimit_Field_CreditLimitInfoTable_Locator}    ${Field_Temporary Credit Limit_Credit Limit Info}    Field
+
+wDisplay Fields_Asset Promotion_Promotion
+    wValidate Topic_Promotion
+    wWait And Click    ${Promotion_Topic_Locator}
+    wValidate Text_Asset Promotion_Promotion
+    wValidate Table_Asset Promotion_Promotion
+    wValidate Field_Promotion Code_Asset Promotion_Promotion
+    wValidate Field_Promotion Name_Asset Promotion_Promotion
+    wValidate Field_Description_Asset Promotion_Promotion
+    wValidate Field_Promotion Class_Asset Promotion_Promotion
+    wValidate Field_Start_Asset Promotion_Promotion
+    wValidate Field_End_Asset Promotion_Promotion
+    wValidate Field_Duration_Asset Promotion_Promotion
+    wValidate Field_Payment Mode_Asset Promotion_Promotion
+    wValidate Field_Attribute_Asset Promotion_Promotion
+    #Unique Functions created by Dome
+
+wDisplay Fields_Account Promotion(BA)_Promotion
+    wValidate Topic_Promotion
+    wWait And Click    ${Promotion_Topic_Locator}
+    wValidate Text_Account Promotion (BA)_Promotion
+    wValidate Table_Account Promotion (BA)_Promotion
+    wValidate Field_Promotion Code_Account Promotion (BA)_Promotion
+    wValidate Field_Promotion Name_Account Promotion (BA)_Promotion
+    wValidate Field_Description_Account Promotion (BA)_Promotion
+    wValidate Field_Promotion Class_Account Promotion (BA)_Promotion
+    wValidate Field_Start_Account Promotion (BA)_Promotion
+    wValidate Field_End_Account Promotion (BA)_Promotion
+    wValidate Field_Duration_Account Promotion (BA)_Promotion
+    wValidate Field_Payment Mode_Account Promotion (BA)_Promotion
+    wValidate Field_Attribute_Account Promotion (BA)_Promotion
+
+wValidate Field_Customer_Recent Interactions
+    wValidate Exact Text    ${Field_Customer_RecentInteractions_Locator}    ${Field_Customer_RecentInteractions}    Field
+
+wValidate Field_Contact Number_Recent Interactions
+    wValidate Exact Text    ${Field_Contact Number_RecentInteractions_Locator}    ${Field_Contact Number_RecentInteractions}    Field
+
+wValidate Field_Comment_Recent Interactions
+    wValidate Exact Text    ${Field_Comment_RecentInteractions_Locator}    ${Field_Comment_RecentInteractions}    Field
+
+wValidate Field_Number of Case_Recent Interactions
+    wValidate Exact Text    ${Field_NumberofCase_RecentInteractions_Locator}    ${Field_NumberofCase_RecentInteractions}    Field
+
+wValidate Field_Cases created during this interaction_Recent Interactions
+    wValidate Exact Text    ${Field_CasesCreatedDuringThisInteraction_RecentInteractions_Locator}    ${Field_CasesCreatedDuringThisInteraction_RecentInteractions}    Field
+
+wValidate Topic_Events & Cases
+    wValidate Exact Text    ${EventAndCases_Topic_Locator}    ${Topic_Events&Cases}    Topic
+
+wValidate Table_Events & Cases
+    wValidate Element Present    ${EventAndCases_Table1_Locator}    Events & Cases    Table
+
+wValidate Field_Case/Event ID_Events & Cases
+   wValidate Exact Text    ${CaseEventID_Field_EventAndCasesTable1_Locator}    ${Field_Case/EventID_Events&Cases}    Field
+
+wValidate Field_Created Date_Events & Cases
+   wValidate Exact Text    ${CreatedDate_Field_EventAndCasesTable1_Locator}     ${Field_CreatedDate_Events&Cases}    Field
+
+wValidate Field_Channel_Events & Cases
+   wValidate Exact Text    ${Channel_Field_EventAndCasesTable1_Locator}    ${Field_Channel_Events&Cases}    Field
+
+wValidate Field_Location Code_Events & Cases
+   wValidate Exact Text    ${LocationCode_Field_EventAndCasesTable1_Locator}   ${Field_LocationCode_Events&Cases}    Field
+
+wValidate Field_Asset No_Events & Cases
+   wValidate Exact Text    ${AssetNo_Field_EventAndCasesTable1_Locator}    ${Field_AssetNo_Events&Cases}    Field
+
+wValidate Field_Topic / Event Description_Events & Cases
+   wValidate Exact Text   ${TopicEventDescription_Field_EventAndCasesTable1_Locator}   ${Field_Topic/EventDescription_Events&Cases}    Field
+
+wValidate Field_Reference / Order #_Events & Cases
+   wValidate Exact Text    ${ReferenceOrder_Field_EventAndCasesTable1_Locator}     ${Field_Reference/Order#_Events&Cases}    Field
+
+wValidate Field_Created By_Events & Cases
+   wValidate Exact Text    ${Createdby_Field_EventAndCasesTable1_Locator}     ${Field_CreatedBy_Events&Cases}    Field
+
+wValidate Field_Owner_Events & Cases
+   wValidate Exact Text    ${Owner_Field_EventAndCasesTable1_Locator}    ${Field_Owner_Events&Cases}    Field
+
+wValidate Field_Status / Event Type_Events & Cases
+   wValidate Exact Text   ${StatusEventType_Field_EventAndCasesTable1_Locator}    ${Field_Status/EventType_Events&Cases}    Field
+
+wValidate Field_Commit Date_Events & Cases
+   wValidate Exact Text   ${CommitDate_Field_EventAndCasesTable1_Locator}     ${Field_CommitDate_Events&Cases}    Field
+
+wValidate Field_Closed Date_Events & Cases
+   wValidate Exact Text   ${ClosedDate_Field_EventAndCasesTable1_Locator}     ${Field_ClosedDate_Events&Cases}    Field
+
+wValidate Field_Case Duration_Events & Cases
+   wValidate Exact Text   ${CaseDuration_Field_EventAndCasesTable1_Locator}   ${Field_CaseDuration_Events&Cases}    Field
+
+wDisplay Fields_Events & Cases
+    wValidate Topic_Events & Cases
+    wWait And Click    ${EventAndCases_Topic_Locator}
+    wValidate Table_Events & Cases
+    wValidate Field_Case/Event ID_Events & Cases
+    wValidate Field_Created Date_Events & Cases
+    wValidate Field_Channel_Events & Cases
+    wValidate Field_Location Code_Events & Cases
+    wValidate Field_Asset No_Events & Cases
+    wValidate Field_Topic / Event Description_Events & Cases
+    wValidate Field_Reference / Order #_Events & Cases
+    wValidate Field_Created By_Events & Cases
+    wValidate Field_Owner_Events & Cases
+    wValidate Field_Status / Event Type_Events & Cases
+    wValidate Field_Commit Date_Events & Cases
+    wValidate Field_Closed Date_Events & Cases
+    wValidate Field_Case Duration_Events & Cases
+
+wValidate Topic_Siebel Activity
+    wValidate Exact Text    ${SiebelActivity_Topic_Locator}    ${Topic_SiebelActivity}    Topic
+
+wValidate Table_Siebel Activity
+    wValidate Element Present    ${SiebelActivityTable_Locator}    Siebel Activity    Table
+
+wValidate Field_Created Date_Siebel Activity
+    wValidate Exact Text    ${CreatedDate_Field_SiebelActivity_Locator}    ${Field_CreatedDate_SiebelActivity}    Field
+
+wValidate Field_Category_Siebel Activity
+    wValidate Exact Text    ${Category_Field_SiebelActivity_Locator}    ${Field_Category_SiebelActivity}    Field
+
+wValidate Field_Sub Category_Siebel Activity
+    wValidate Exact Text    ${SubCategory_Field_SiebelActivity_Locator}    ${Field_SubCategory_SiebelActivity}    Field
+
+wValidate Field_SR/TT_Siebel Activity
+    wValidate Exact Text    ${SRTT_Field_SiebelActivity_Locator}    ${Field_SR/TT_SiebelActivity}    Field
+
+wValidate Field_SR/TT Number_Siebel Activity
+    wValidate Exact Text    ${SRTTNumber_Field_SiebelActivity_Locator}    ${Field_SR/TTNumber_SiebelActivity}    Field
+
+wValidate Field_Status_Siebel Activity
+    wValidate Exact Text    ${Status_Field_SiebelActivity_Locator}    ${Field_Status_SiebelActivity}    Field
+
+wValidate Field_Type_Siebel Activity
+    wValidate Exact Text    ${Type_Field_SiebelActivity_Locator}    ${Field_Type_SiebelActivity}    Field
+
+wValidate Field_Case ID_Siebel Activity
+    wValidate Exact Text    ${CaseID_Field_SiebelActivity_Locator}    ${Field_CaseID_SiebelActivity}    Field
+
+wValidate Field_Activity ID_Siebel Activity
+    wValidate Exact Text    ${ActivityID_Field_SiebelActivity_Locator}    ${Field_ActivityID_SiebelActivity}    Field
+
+wValidate Field_Created By_Siebel Activity
+    wValidate Exact Text    ${CreatedBy_Field_SiebelActivity_Locator}    ${Field_CreatedBy_SiebelActivity}    Field
+
+wDisplay Fields_Siebel Activity
+    wValidate Topic_Siebel Activity
+    wWait And Click    ${SiebelActivity_Topic_Locator}
+    wValidate Table_Siebel Activity
+    wValidate Field_Created Date_Siebel Activity
+    wValidate Field_Category_Siebel Activity
+    wValidate Field_Sub Category_Siebel Activity
+    wValidate Field_SR/TT_Siebel Activity
+    wValidate Field_SR/TT Number_Siebel Activity
+    wValidate Field_Status_Siebel Activity
+    wValidate Field_Type_Siebel Activity
+    wValidate Field_Case ID_Siebel Activity
+    wValidate Field_Activity ID_Siebel Activity
+    wValidate Field_Created By_Siebel Activity
+
+wValidate Text_Service & Promotion
+    wValidate Exact Text    ${ServiceAndPromotion_Text_Locator}    ${Text_Service&Promotion}    Text
+
+wValidate Topic_Service
+    wValidate Exact Text    ${Service_Topic_Locator}    ${Topic_Service}    Topic
+
+wValidate Table_Service
+    wValidate Element Present    ${ServiceTable_Locator}    Service    Table
+
+wValidate Field_Service Name_Service
+    wValidate Exact Text    ${ServiceName_Field_ServiceTable_Locator}    ${Field_ServiceName_Service}    Field
+
+wValidate Field_Service Start Date_Service
+    wValidate Exact Text    ${ServiceStartDate_Field_ServiceTable_Locator}    ${Field_ServiceStartDate_Service}    Field
+
+wValidate Field_Attribute_Service
+    wValidate Exact Text    ${Attribute_Field_ServiceTable_Locator}    ${Field_Attribute_Service}    Field
+
+wDisplay Fields_Service
+    wValidate Topic_Service
+    wWait And Click    ${Service_Topic_Locator}
+    wValidate Field_Service Name_Service
+    wValidate Field_Service Start Date_Service
+    wValidate Field_Attribute_Service
+    #Unique Functions created by Anusha
+
+wValidate Field_Available Credit_Credit Limit Info
+    wValidate Exact Text    ${AvailableCredit_Field_CreditLimitInfoTable_Locator}    ${Field_AvailableCredit_CreditLimitInfo}   Field
+
+wValidate Field_Advanced Payment_Credit Limit Info
+    wValidate Exact Text    ${Field_AdvancedPayment_CreditLimit Info_Locator}    ${Field_AdvancedPayment_CreditLimit Info}    Field
+
+wValidate Field_Billed Usage_Credit Limit Info
+    wValidate Exact Text     ${BilledUsage_Field_CreditLimitInfoTable_Locator}  ${Field_BilledUsage_CreditLimitInfo}    Field
+
+wValidate Field_Unbilled Usage_Credit Limit Info
+    wValidate Exact Text    ${UnbilledUsage_Field_CreditLimitInfoTable_Locator}     ${Field_UnbilledUsage_CreditLimitInfo}   Field
+
+wValidate Field_Unpaid Spend_Credit Limit Info
+    wValidate Exact Text    ${UnpaidSpend_Field_CreditLimitInfoTable_Locator}    ${Field_UnpaidSpend_CreditLimitInfo}   Field
+
+wValidate Field_Recurring Fee_Credit Limit Info
+    wValidate Exact Text    ${Field_RecurringFee_CreditLimitInfo_Locator}    ${Field_RecurringFee_CreditLimitInfo}    Field
+
+wValidate Field_One Time Fee_Credit Limit Info
+    wValidate Exact Text    ${Field_OneTimeFee_CreditLimit Info_Locator}    ${Field_OneTimeFee_CreditLimit Info}    Field
+
+wValidate Field_Last Bill Date_Credit Limit Info
+    wValidate Exact Text    ${Field_LastBillDate_CreditLimitInfo_Locator}    ${Field_LastBillDate_CreditLimitInfo}    Field
+
+wValidate Field_Next Bill Date_Credit Limit Info
+    wValidate Exact Text    ${Field_Next Bill Date_Credit Limit Info_Locator}    ${Field_Next Bill Date_Credit Limit Info}    Field
+
+wValidate Field_Exempt Flag_Credit Limit Info
+    wValidate Exact Text    ${Field_ExemptFlag_CreditLimitInfo_Locator}    ${Field_ExemptFlag_CreditLimitInfo}    Field
+
+wValidate Field_Exempt Effective Date_Credit Limit Info
+    wValidate Exact Text    ${Field_Exempt Effective Date_Credit Limit Info_Locator}    ${Field_Exempt Effective Date_Credit Limit Info}    Field
+
+wValidate Field_Exempt Expire Date_Credit Limit Info
+    wValidate Exact Text    ${Field_Exempt Expire Date_Credit Limit Info_Locator}    ${Field_Exempt Expire Date_Credit Limit Info}    Field
+
+wValidate Topic_Invoice History
+    wValidate Exact Text    ${Topic_Invoice History_Locator}    ${Topic_Invoice History}    Topic
+
+wValidate Dropdown_Invoice History
+    wValidate Exact Text    ${Dropdown_Invoice History_Locator}     ${Dropdown_InvoiceHistory}   Drop down
+    wWait And Click     ${Dropdown_Invoice History_Locator}
+    wValidate Exact Text     ${Dropdown_3Months_InvoiceHistory_Locator}     ${Dropdown_Option1}     3 Months
+    wValidate Exact Text    ${Dropdown_6Months_InvoiceHistory_Locator}     ${Dropdown_Option2}     6 Months
+    wValidate Exact Text    ${Dropdown_12Months_InvoiceHistory_Locator}    ${Dropdown_Option3}     12 Months
+
+wValidate Table_Invoice History
+    wValidate Element Present    ${Table_Invoice History_Locator}    Invoice History    Table
+
+wValidate Field_Invoice #_Invoice History
+    wValidate Exact Text    ${Field_Invoice #_Invoice History_Locator}    ${Field_Invoice #_Invoice History}    Field
+
+wValidate Field_Status_Invoice History
+    wValidate Exact Text    ${Field_Status_InvoiceHistory_Locator}    ${Field_Status_InvoiceHistory}    Field
+
+wValidate Field_Invoic Amt (Inc VAT)_Invoice History
+    wValidate Exact Text    ${Field_InvoicAmt (Inc VAT)_InvoiceHistory_Locator}    ${Field_InvoicAmt (Inc VAT)_InvoiceHistory}    Field
+
+wValidate Field_VAT Amount_Invoice History
+    wValidate Exact Text    ${Field_VATAmount_InvoiceHistory_Locator}    ${Field_VATAmount_InvoiceHistory}    Field
+
+wValidate Field_Withholding Tax_Invoice History
+    wValidate Exact Text    ${Field_WithholdingTax_InvoiceHistory_Locator}    ${Field_WithholdingTax_InvoiceHistory}    Field
+
+wValidate Field_Outstanding (Inc VAT)_Invoice History
+    wValidate Exact Text    ${Field_Outstanding(Inc VAT)_InvoiceHistory_Locator}    ${Field_Outstanding(Inc VAT)_InvoiceHistory}    Field
+
+wValidate Field_Payment Allocation Amt_Invoice History
+    wValidate Exact Text    ${Field_PaymentAllocationAmt_Invoice History_Locator}    ${Field_PaymentAllocationAmt_Invoice History}    Field
+
+wValidate Field_Pending Disputes_Invoice History
+    wValidate Exact Text    ${Field_Pending Disputes_Invoice History_Locator}    ${Field_Pending Disputes_Invoice History}    Field
+
+wValidate Field_Start - End Date_Invoice History
+    wValidate Exact Text    ${Field_Start - EndDate_InvoiceHistory_Locator}    ${Field_Start - EndDate_InvoiceHistory}    Field
+
+wValidate Field_Due Date_Invoice History
+    wValidate Exact Text    ${Field_DueDate_InvoiceHistory_Locator}    ${Field_DueDate_InvoiceHistory}    Field
+
+wValidate Field_BA No_Invoice History
+    wValidate Exact Text    ${Field_BANo_InvoiceHistory_Locator}    ${Field_BANo_InvoiceHistory}    Field
+
+wValidate Field_Invoice Date_Invoice History
+    wValidate Exact Text    ${Field_InvoiceDate_InvoiceHistory_Locator}    ${Field_InvoiceDate_InvoiceHistory}    Field
+
+wValidate Field_Actual Bill Date_Invoice History
+    wValidate Exact Text    ${Field_ActualBillDate_InvoiceHistory_Locator}    ${Field_ActualBillDate_InvoiceHistory}    Field
+
+wValidate Topic_Payment History
+    wValidate Exact Text    ${Topic_PaymentHistory_Locator}    ${Topic_PaymentHistory}    Topic
+
+wValidate Dropdown_Payment History
+    wValidate Exact Text     ${Dropdown_PaymentHistory_Locator}     ${Dropdown_PaymentHistory}   Drop down
+    wWait And Click     ${Dropdown_PaymentHistory_Locator}
+    wValidate Exact Text    ${Dropdown_3Months_PaymentHistory_Locator}  ${Dropdown_Option1}     3 Months
+    wValidate Exact Text     ${Dropdown_6Months_PaymentHistory_Locator}  ${Dropdown_Option2}    6 Months
+    wValidate Exact Text     ${Dropdown_12Months_PaymentHistory_Locator}    ${Dropdown_Option3}  12 Months
+
+wValidate Table_Payment History
+    wValidate Element Present    ${Table_PaymentHistory_Locator}    Payment History    Table
+
+wValidate Field_Pay For_Payment History
+    wValidate Exact Text    ${Field_PayFor_PaymentHistory_Locator}    ${Field_PayFor_PaymentHistory}    Field
+
+wValidate Field_Entry EDC_Payment History
+    wValidate Exact Text    ${Field_EntryEDC_PaymentHistory_Locator}    ${Field_EntryEDC_PaymentHistory}    Field
+
+wValidate Field_BA No_Payment History
+    wValidate Exact Text    ${Field_BANo_PaymentHistory_Locator}    ${Field_BANo_PaymentHistory}    Field
+
+wValidate Field_Receipt DN/CN No_Payment History
+    wValidate Exact Text    ${Field_ReceiptDN/CN No_PaymentHistory_Locator}    ${Field_ReceiptDN/CN No_PaymentHistory}    Field
+
+wValidate Field_Additional Payment Refrence_Payment History
+    wValidate Exact Text    ${Field_AdditionalPaymentRefrence_PaymentHistory_Locator}    ${Field_AdditionalPaymentRefrence_PaymentHistory}    Field
+
+wValidate Field_Receipt Amt_Payment History
+    wValidate Exact Text    ${Field_ReceiptAmt_PaymentHistory_locator}    ${Field_ReceiptAmt_PaymentHistory}    Field
+
+wValidate Field_Tax Amt_Payment History
+    wValidate Exact Text    ${Field_TaxAmt_PaymentHistory_Locator}    ${Field_TaxAmt_PaymentHistory}    Field
+
+wValidate Field_WHT Tax Amt_Payment History
+    wValidate Exact Text    ${Field_WHTTaxAmt_PaymentHistory_Locator}    ${Field_WHTTaxAmt_PaymentHistory}    Field
+
+wValidate Field_Receipt Date_Payment History
+    wValidate Exact Text    ${Field_ReceiptDate_PaymentHistory_Locator}    ${Field_ReceiptDate_PaymentHistory}    Field
+
+wValidate Field_ช่องทางรับชำระ_Payment History
+    wValidate Exact Text    ${Field_ช่องทางรับชำระ_PaymentHistory_Locator}    ${Field_ช่องทางรับชำระ_PaymentHistory}    Field
+
+wValidate Field_Location_Payment History
+    wValidate Exact Text    ${Field_Location_PaymentHistory_Locator}    ${Field_Location_PaymentHistory}    Field
+
+wValidate Field_Invoice No_Payment History
+    wValidate Exact Text    ${Field_InvoiceNo_PaymentHistory_Locator}    ${Field_InvoiceNo_PaymentHistory}    Field
+
+wDisplay Fields_Customer & Billing_Pre-Bos
+    wValidate Topic_Customer & Billing
+    wValidate Field_Customer Name_Customer & Billing
+    wValidate Field_Customer Name_Customer & Billing
+    wValidate Field_ID Type_Customer & Billing
+    wValidate Field_ID#_Customer & Billing
+    #wValidate Field_Watchlist Info_Customer & Billing
+    wValidate Field_Fraud Info_Customer & Billing
+
+wLogout And Close Browser
+    #Description:    This method will close all the open tabs, perform logout and close the browser
+    #Argunments: NA
+    unselect frame
+    log to console    close first tab...
+
+    #For closing all tabs
+    #wClose Interaction Tabs
+
+    #Logout and close browser
+    log to console    log out...
+    run keyword and ignore error    wWait And Click    xpath=(//a[@class="Header_nav"])[2]      300
+    Wait Until Page Contains Element    xpath=//a[@class="menu-item-anchor menu-item-expand"]   300     Logout not seen in given time
+    Mouse Over    xpath=//a[@class="menu-item-anchor menu-item-expand"]
+    run keyword and ignore error    wWait And Click    xpath=//span[text()='Logout']    30
+    run keyword and ignore error    Handle Alert
+    Sleep    3
+    Capture Page Screenshot
+    Close All Browsers
+
+wClose Interaction Tabs
+    ${tabs}=    Get Matching Xpath Count    xpath=//i[@title="Close Tab "]
+    log to console      Opened Tabs ${tabs}
+    :FOR    ${i}    IN RANGE    1   ${tabs}
+    \   wWait And Click     xpath=(//i[@title="Close Tab "])[1]     30
+    \   Log To Console      Closed tab ${i}
+    sleep    15
+
+
+# Tausif
+wDisplay Fields_Asset Detail_Pre-Bos
+
+wDisplay Fields_Customer & Billing_Pre - INS
+    wValidate Topic_Customer & Billing
+    wValidate Field_Customer Name_Customer & Billing
+    wValidate Field_ID Type_Customer & Billing
+    wValidate Field_ID#_Customer & Billing
+    wValidate Field_Fraud Info_Customer & Billing
+
+wDisplay Fields_Asset Detail_Pre - INS
+    wValidate Topic_Asset Detail
+    wValidate Textbox_Mobile
+    wValidate Field_Prepaid Iden_Asset Detail
+    wValidate Field_Product_Asset Detail
+    wValidate Field_Status_Asset Detail
+    wValidate Field_Charge Type_Asset Detail
+    wValidate Field_Suspend Request Flag_Asset Detail
+    wValidate Field_Error Lock_Asset Detail
+    wValidate Field_Service Year_Asset Detail
+    wValidate Field_Segment_Asset Detail
+    wValidate Field_PA Group_Asset Detail
+    wValidate Field_SIM Serial No_Asset Detail
+    wValidate Field_Balance_Asset Detail
+    wValidate Field_Emergency Airtime_Asset Detail
+    wValidate Field_Validity_Asset Detail
+    wValidate Field_Active Stop_Asset Detail
+    wValidate Field_Suspend Stop_Asset Detail
+    wValidate Field_Disable Stop_Asset Detail
+    wValidate Field_Last Recharge Date_Asset Detail
+    wValidate Field_ARPU_Asset Detail
+    wValidate Field_Monthly Usage_Asset Detail
+    wValidate Field_Device Contract_Asset Detail
+    wValidate Field_Main Promotion_Asset Detail
+
+wDisplay Fields_Recent Interactions_Pre - INS
+    wValidate Topic_Recent Interactions
+    wWait And Click     ${RecentInteractions_Topic_Locator}
+    wValidate Table_Recent Interactions
+    wValidate Field_Other_Recent Interactions
+    #wValidate Field_Not yet determined_Recent Interactions
+    wValidate Field_Interaction No_Recent Interactions
+    wValidate Field_Created by_Recent Interactions
+    wValidate Field_Create Date_Recent Interactions
+    wValidate Field_Duration_Recent Interactions
+
+wDisplay Fields_Expand First Row_Recent Interactions
+    wValidate Topic_Recent Interactions
+    wWait And Click    ${RecentInteractions_Topic_Locator}
+    wValidate Table_Recent Interactions
+    wWait And Click    ${Expand_Row1_RecentInteractions_Locator}
+    wValidate Field_Customer_Recent Interactions
+    wValidate Field_Contact Number_Recent Interactions
+    wValidate Field_Comment_Recent Interactions
+    wValidate Field_Number of Case_Recent Interactions
+    wValidate Field_Cases created during this interaction_Recent Interactions
+
+wDisplay Fields_Customer & Billing_Pre - RTBS
+    wValidate Field_Customer Name_Customer & Billing
+    wValidate Field_ID Type_Customer & Billing
+    wValidate Field_ID#_Customer & Billing
+    wValidate Field_Fraud Info_Customer & Billing
+
+wDisplay Fields_Asset Detail_Pre - RTBS
+    wValidate Textbox_Mobile
+    wValidate Field_Prepaid Iden_Asset Detail
+    wValidate Field_Product_Asset Detail
+    wValidate Field_Status_Asset Detail
+    wValidate Field_Charge Type_Asset Detail
+    wValidate Field_Suspend Request Flag_Asset Detail
+    wValidate Field_Error Lock_Asset Detail
+    wValidate Field_Service Year_Asset Detail
+    wValidate Field_Segment_Asset Detail
+    wValidate Field_PA Group_Asset Detail
+    wValidate Field_SIM Serial No_Asset Detail
+    wValidate Field_Balance_Asset Detail
+    wValidate Field_Emergency Airtime_Asset Detail
+    wValidate Field_Validity_Asset Detail
+    wValidate Field_Active Stop_Asset Detail
+    wValidate Field_Suspend Stop_Asset Detail
+    wValidate Field_Disable Stop_Asset Detail
+    wValidate Field_Last Recharge Date_Asset Detail
+    wValidate Field_ARPU_Asset Detail
+    wValidate Field_Monthly Usage_Asset Detail
+    wValidate Field_Device Contract_Asset Detail
+    wValidate Field_Main Promotion_Asset Detail
+
+wDisplay Fields_Recent Interactions_Pre - RTBS
+    wValidate Topic_Recent Interactions
+    wWait And Click     ${RecentInteractions_Topic_Locator}
+    wValidate Table_Recent Interactions
+    wValidate Field_Not yet determined_Recent Interactions
+    wValidate Field_Interaction No_Recent Interactions
+    wValidate Field_Created by_Recent Interactions
+    wValidate Field_Create Date_Recent Interactions
+    wValidate Field_Duration_Recent Interactions
+
+wDisplay Fields After Expanding_Recent Interactions
+    wValidate Field_Customer_Recent Interactions
+    wValidate Field_Contact Number_Recent Interactions
+    wValidate Field_Comment_Recent Interactions
+    wValidate Field_Number of Case_Recent Interactions
+    wValidate Field_Cases created during this interaction_Recent Interactions
